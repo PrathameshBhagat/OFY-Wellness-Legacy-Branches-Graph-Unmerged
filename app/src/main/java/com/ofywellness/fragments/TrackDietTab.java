@@ -10,9 +10,17 @@ import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.utils.ColorTemplate;
 import com.ofywellness.R;
 import com.ofywellness.db.ofyDatabase;
 import com.ofywellness.modals.Meal;
+
+import java.util.ArrayList;
 
 /**
  * Fragment for DietTrack tab in Home page
@@ -41,6 +49,40 @@ public class TrackDietTab extends Fragment {
         fatsProgressBar = view.findViewById(R.id.track_fats_progress_bar);
         carbohydratesProgressBar = view.findViewById(R.id.track_carbohydrates_progress_bar);
 
+        // Assign the Bar Chart
+        BarChart barChart = view.findViewById(R.id.bar);
+
+        // Now assign Bar Chart entries and fill values
+        ArrayList<BarEntry> entries = new ArrayList<>();
+        entries.add(new BarEntry(1, 1));
+        entries.add(new BarEntry(2, 2));
+        entries.add(new BarEntry(3, 3));
+        entries.add(new BarEntry(4, 4));
+        entries.add(new BarEntry(5, 5));
+        entries.add(new BarEntry(6, 6));
+        entries.add(new BarEntry(7, 7));
+
+        // Create a DataSet for our Bar chart and set its colors
+        BarDataSet barDataset = new BarDataSet(entries, "Nutrient Graph");
+        barDataset.setColors(ColorTemplate.COLORFUL_COLORS);
+
+        // Create a data for our bar chart
+        BarData barData = new BarData(barDataset);
+
+        // Array of Days in a week for bar chart labels
+        String[] days = {"Sun", "Mon", "Tue", "Wed", "Thr", "Fri", "Sat"};
+
+        // Now we get our bar chart's X-axis and set it to show relevant labels
+        XAxis barXAxis = barChart.getXAxis();
+        barXAxis.setGranularity(1f);
+        barXAxis.setValueFormatter((value, axis) -> days[(int) value - 1]);
+
+        // Now Set the data for the bar chart and set its animation
+        barChart.setData(barData);
+        barChart.animateY(6000);
+
+        // Show/Refresh the bar chart
+        barChart.invalidate();
         // Update tracking tracking data as soon as this tab loads
         updateDietTrackingData();
         // Return view to onCreateView method and the method
