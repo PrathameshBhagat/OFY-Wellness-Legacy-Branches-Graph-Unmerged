@@ -255,7 +255,7 @@ public class ofyDatabase {
      * @param context          The context to show toast message
      * @param currentProgress  The meal object with the current diet data
      */
-    public static void updateDietProgress(Context context, Meal currentProgress, ProgressBar energyProgressBar, ProgressBar proteinsProgressBar, ProgressBar fatsProgressBar, ProgressBar carbohydratesProgressBar) {
+    public static void updateDietProgress(TrackDietTab context, Meal currentProgress, ProgressBar energyProgressBar, ProgressBar proteinsProgressBar, ProgressBar fatsProgressBar, ProgressBar carbohydratesProgressBar) {
 
         // Database ref is already pointing current user just get the target and update progress
         ofyDatabaseref.child("Target").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
@@ -280,6 +280,15 @@ public class ofyDatabase {
                         // Get the diet target from DataSnapshot from the task and convert to HashMap
                         HashMap target = (HashMap) task.getResult().getValue();
 
+                        // If the diet target is empty then show the warning and return
+                        if ( target.isEmpty() ) {
+                            context.warning(true);
+                            return;
+                        }
+                        // Else do not show the warning
+                        else
+                            context.warning(false);
+
                         // Get the target values from the map
                         targetEnergy = Integer.parseInt(target.get("energy").toString());
                         targetProteins =  Integer.parseInt(target.get("proteins").toString());
@@ -293,14 +302,14 @@ public class ofyDatabase {
                         carbohydratesProgressBar.setProgress( currentCarbohydrates * 100 / targetCarbohydrates );
 
                         // Show a toast message
-                        Toast.makeText(context, "Updated the progress", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context.requireActivity(), "Updated the progress", Toast.LENGTH_SHORT).show();
                     } else {
                         // Show a toast error message
-                        Toast.makeText(context, "Error getting data from firebase", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context.requireActivity(), "Error getting data from firebase", Toast.LENGTH_SHORT).show();
                     }
                 } catch (Exception e) {
                     // Catch exception, show a toast error message and print error stack
-                    Toast.makeText(context, "Error in getting and setting data", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context.requireActivity(), "Error in getting and setting data", Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
                 }
             }
