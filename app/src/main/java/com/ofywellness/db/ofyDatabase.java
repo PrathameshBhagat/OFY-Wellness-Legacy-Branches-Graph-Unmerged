@@ -302,22 +302,25 @@ public class ofyDatabase {
                         fatsProgressBar.setProgress( currentFats * 100 / targetFats );
                         carbohydratesProgressBar.setProgress( currentCarbohydrates * 100 / targetCarbohydrates );
 
-                        // Show a toast message
-                        Toast.makeText(context.requireActivity(), "Updated the progress", Toast.LENGTH_SHORT).show();
                     } else {
-                        // Show a toast error message
-                        Toast.makeText(context.requireActivity(), "Error getting data from firebase", Toast.LENGTH_SHORT).show();
+                        // If data does not exists then show warning and
+                        context.warning(true);
+
+                        // Also throw an error with corresponding  message
+                        throw new RuntimeException("Diet target not found");
                     }
                 } catch (Exception e) {
                     // Catch exception, show a toast error message and print error stack
-                    Toast.makeText(context.requireActivity(), "Error in getting and setting data", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context.requireActivity(), e.getMessage() , Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                // Catch exception, show a toast error message and print error stack
+                Toast.makeText(context.requireActivity(), "Error," + error.getMessage() , Toast.LENGTH_SHORT).show();
+                error.toException().printStackTrace();
             }
         });
 
@@ -344,13 +347,13 @@ public class ofyDatabase {
 
                 // Simple try catch block
                 try {
+
+                    // Clear all the existing meals
+                    allMealsFound.clear();
+
                     // Check if the task to get data was successful
                     if (snapshot.exists()) {
-
-                        // Clear all the existing meals
-                        allMealsFound.clear();
-
-                        // Loop through all the days
+                        // Loop through data of all the days
                         for (DataSnapshot ofyDateDataSnapshot : snapshot.getChildren()) {
 
                             // Get the meal from DataSnapshot and convert to HashMap
@@ -371,9 +374,6 @@ public class ofyDatabase {
 
                         }
 
-                    } else {
-                        // Show a toast error message
-                        Toast.makeText(context, "Empty meal data received", Toast.LENGTH_SHORT).show();
                     }
 
                     // Now display all the meals
@@ -381,7 +381,7 @@ public class ofyDatabase {
 
                 } catch (Exception e) {
                     // Catch exception, show a toast error message and print error stack
-                    Toast.makeText(context, "Error, Please set the date again", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
                 }
 
@@ -561,7 +561,7 @@ public class ofyDatabase {
                         linearLayout.removeAllViews();
 
                         // Show a toast message if no medicine found
-                        Toast.makeText(context, "No medicine intake found", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "No medicine intake found for this date", Toast.LENGTH_SHORT).show();
                     }
                 } catch (Exception e) {
                     // Catch exception, show a toast error message and print error stack

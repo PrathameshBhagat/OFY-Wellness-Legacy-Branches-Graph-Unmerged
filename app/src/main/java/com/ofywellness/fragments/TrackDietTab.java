@@ -59,7 +59,7 @@ public class TrackDietTab extends Fragment {
         setBarChart();
 
         // Hide the warning by default. (Warning to update diet target)
-        warning(true);
+        warning(false);
 
         // Update tracking tracking data as soon as this tab loads
         updateDietTrackingData();
