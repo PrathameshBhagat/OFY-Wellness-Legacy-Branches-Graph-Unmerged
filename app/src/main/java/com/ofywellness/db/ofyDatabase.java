@@ -25,11 +25,11 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.annotations.NotNull;
 import com.ofywellness.HomeActivity;
 import com.ofywellness.R;
-import com.ofywellness.fragments.*;
-import com.ofywellness.register.RegisterActivity;
+import com.ofywellness.fragments.TrackDietTab;
 import com.ofywellness.fragments.ViewMealTab;
 import com.ofywellness.modals.Meal;
 import com.ofywellness.modals.User;
+import com.ofywellness.register.RegisterActivity;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -169,11 +169,12 @@ public class ofyDatabase {
     /**
      * Track user's  diet and set TextViews to the tracking data
      *
-     * @param context          The context to show toast message
+     * @param trackDietTab          The trackDiet fragment to show toast message
      * @param energyValueLabel All others are TextViews and Progress Bars to set tracking data
      */
-    public static void getTrackDietDataAndSetData(TrackDietTab context, TextView energyValueLabel, TextView proteinsValueLabel, TextView fatsValueLabel, TextView carbohydratesValueLabel) {
+    public static void getTrackDietDataAndSetData(TrackDietTab trackDietTab, TextView energyValueLabel, TextView proteinsValueLabel, TextView fatsValueLabel, TextView carbohydratesValueLabel) {
 
+        Context context = trackDietTab.getContext();
         // Get the DataSnapshot to get tracking data, calculate it
         // And display it to user by updating the text views
         ofyDatabaseref.child("Diet").addValueEventListener(new ValueEventListener() {
@@ -209,21 +210,21 @@ public class ofyDatabase {
                         carbohydratesValueLabel.setText(String.format("%sg", totalCarbohydrates));
 
                         // Now show the updated progress to the user
-                        context.updateProgress();
+                        trackDietTab.updateProgress();
                     } else {
                         // Show a toast error message
-                        Toast.makeText(context.requireActivity(), "Error getting data from firebase", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Error in getting Diet target", Toast.LENGTH_SHORT).show();
                     }
                 } catch (Exception e) {
                     // Catch exception, show a toast error message and print error stack
-                    Toast.makeText(context.requireActivity(), "Error in getting and setting data", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Error in getting Diet target", Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
                 }
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 // Catch exception, show a toast error message and print error stack
-                Toast.makeText(context.requireActivity(), "Error in getting and setting data", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Error in getting Diet target", Toast.LENGTH_SHORT).show();
                 error.toException().printStackTrace();
             }
         });
