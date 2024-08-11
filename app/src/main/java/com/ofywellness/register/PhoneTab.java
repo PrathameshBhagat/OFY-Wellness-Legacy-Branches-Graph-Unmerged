@@ -46,4 +46,12 @@ public class PhoneTab extends Fragment {
 
         return view;
     }
+
+    // Method to be called when this tab resumes
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Set label to ask user to enter phone number
+        ((RegisterActivity) requireActivity()).setLabel("Please enter your Contact No.");
+    }
 }

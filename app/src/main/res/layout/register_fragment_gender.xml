@@ -4,19 +4,6 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- Text View for register age label -->
-    <TextView
-        android:id="@+id/register_gender_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/register_gender_linear_layout"
-        android:layout_centerInParent="true"
-        android:text="Enter your gender"
-        android:textAlignment="center"
-        android:textColor="#006666"
-        android:textSize="50sp"
-        android:textStyle="bold" />
-
     <!-- Linear Layout for register age contents -->
     <LinearLayout
         android:id="@+id/register_gender_linear_layout"

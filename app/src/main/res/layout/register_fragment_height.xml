@@ -3,18 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Text View for register height label -->
-    <TextView
-        android:id="@+id/register_height_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/register_height_linear_layout"
-        android:layout_centerInParent="true"
-        android:text="Enter Height"
-        android:textAlignment="center"
-        android:textColor="#006666"
-        android:textSize="50sp"
-        android:textStyle="bold" />
 
     <!-- Linear Layout for register height contents -->
     <LinearLayout

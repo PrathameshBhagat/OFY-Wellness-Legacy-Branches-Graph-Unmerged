@@ -49,4 +49,12 @@ public class HeightTab extends Fragment {
 
         return view;
     }
+
+    // Method to be called when this tab resumes
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Set label to ask user to enter his height
+        ((RegisterActivity) requireActivity()).setLabel("Please enter your Height");
+    }
 }

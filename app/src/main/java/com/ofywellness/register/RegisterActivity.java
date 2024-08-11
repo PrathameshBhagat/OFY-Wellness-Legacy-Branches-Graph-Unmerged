@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -47,7 +48,7 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
-                progressBar.setProgress((int) (((1 + position) / (float)5) * 100));
+                progressBar.setProgress((int) (((position) / (float)5) * 100));
             }
         });
 
@@ -92,6 +93,13 @@ public class RegisterActivity extends AppCompatActivity {
             Toast.makeText(c, "Unable to register user, please close the app and try again", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
+    }
+
+    // Method to change label according to the register tabs
+    void setLabel(String label){
+        // Get the Text View and set the text
+        ((TextView)findViewById(R.id.register_label)).setText(label);
+
     }
 
 

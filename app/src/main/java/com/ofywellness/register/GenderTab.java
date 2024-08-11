@@ -19,6 +19,7 @@ public class GenderTab extends Fragment {
         // Modification for getting the view object
         View view = inflater.inflate(R.layout.register_fragment_gender, container, false);
 
+        // Set gender to null initially
         RegisterActivity.USER_GENDER = null;
 
         view.findViewById(R.id.register_gender_female_card).setOnClickListener((v) -> {
@@ -54,5 +55,13 @@ public class GenderTab extends Fragment {
         });
         return view;
 
+    }
+
+    // Method to be called when this tab resumes
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Set label to ask user to select gender
+        ((RegisterActivity) requireActivity()).setLabel("Please select your Gender");
     }
 }

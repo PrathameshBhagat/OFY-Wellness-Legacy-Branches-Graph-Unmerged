@@ -48,4 +48,13 @@ public class AgeTab extends Fragment {
 
         return view;
     }
+
+    // Method to be called when this tab resumes
+    @Override
+    public void onResume() {
+        //  method
+        super.onResume();
+        // Set label to ask user to enter his age
+        ((RegisterActivity) requireActivity()).setLabel("Please enter your Age");
+    }
 }
