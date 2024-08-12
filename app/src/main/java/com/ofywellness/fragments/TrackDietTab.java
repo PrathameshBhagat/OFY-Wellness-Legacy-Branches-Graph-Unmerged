@@ -1,7 +1,6 @@
 package com.ofywellness.fragments;
 
 import android.graphics.Color;
-import android.graphics.DashPathEffect;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +14,6 @@ import androidx.fragment.app.Fragment;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
@@ -38,7 +36,7 @@ public class TrackDietTab extends Fragment {
 
     private TextView energyValueLabel, proteinsValueLabel, fatsValueLabel, carbohydratesValueLabel;
     private ProgressBar energyProgressBar, proteinsProgressBar, fatsProgressBar, carbohydratesProgressBar;
-
+    private LineChart lineChart;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Get the view for this fragment and inflate it
@@ -57,7 +55,7 @@ public class TrackDietTab extends Fragment {
         carbohydratesProgressBar = view.findViewById(R.id.track_carbohydrates_progress_bar);
 
         // Assign the Line Graph
-        LineChart lineChart = view.findViewById(R.id.track_line_chart);
+        lineChart = view.findViewById(R.id.track_line_chart);
 
         // Assign the Bar Chart
         BarChart barChart = view.findViewById(R.id.track_water_intake_bar_chart);
@@ -96,7 +94,8 @@ public class TrackDietTab extends Fragment {
         // Show/Refresh the bar chart
         barChart.invalidate();
 
-        setLineChart(view);
+        // Call the method to set the line graph
+        setLineChart();
 
         // Update tracking tracking data as soon as this tab loads
         updateDietTrackingData();
@@ -104,14 +103,13 @@ public class TrackDietTab extends Fragment {
         return view;
     }
 
-    void setLineChart(View view){
+    // Method to set the line chart
+    void setLineChart() {
 
-        // Assign the Line Graph
-        LineChart lineChart = view.findViewById(R.id.track_line_chart);
+        // Hide the description of the line chart, we don't need it
         lineChart.getDescription().setEnabled(false);
-        lineChart.setOutlineAmbientShadowColor(Color.WHITE);
 
-
+        // Get dummy entries
         ArrayList<Entry> entries = new ArrayList<>();
         entries.add(new Entry(1,10));
         entries.add(new Entry(2,20));
@@ -121,30 +119,43 @@ public class TrackDietTab extends Fragment {
         entries.add(new Entry(6,60));
         entries.add(new Entry(7,70));
 
+        // Create the dataset for the line chart
         LineDataSet lineDataset = new LineDataSet(entries, "");
+
+        // Set the line color to black and circle (point) color to blue
         lineDataset.setColor(Color.BLACK);
         lineDataset.setCircleColor(Color.BLUE);
 
-
-        // Create a data for our bar chart
+        // Create a data for our line chart from the dataset
         LineData lineData = new LineData(lineDataset);
 
-
+        // String of days (first date needs to be empty as the X-axis's minimum is 0.5)
         String[] days = {"","Sun", "Mon", "Tue", "Wed", "Thr", "Fri", "Sat"};
 
+        // Hide the right axis as we do not need a right axis for this chart
         lineChart.getAxisRight().setEnabled(false);
 
-        YAxis lineYAxis = lineChart.getAxisLeft();
-        lineYAxis.setAxisMinimum(0f);
+        // Get the left axis and make it start with 0th point
+        lineChart.getAxisLeft().setAxisMinimum(0f);
 
-
+        // Get the x axis of line chart
         XAxis lineXAxis = lineChart.getXAxis();
-        lineXAxis.setValueFormatter((value, axis) -> days[((int) value)]);
+
+        // Remove grid lines and set axis minimum to 0.5
         lineXAxis.setDrawGridLines(false);
         lineXAxis.setAxisMinimum(0.5f);
 
+        // Set granularity to 1 so that on zoom the X values do not get repeated
+        lineXAxis.setGranularity(1f);
+
+        // Now set its labels via value formatter, note here's no "-1", as minimum is 0.5 and not 0
+        lineXAxis.setValueFormatter((value, axis) -> days[((int) value)]);
+
+        // Now set the line chart's animation
+        lineChart.animateY(6000);
+
+        // Finally set the data
         lineChart.setData(lineData);
-        lineChart.animateXY(6000,6000);
 
     }
     // Update tracking data each time user clicks update button
