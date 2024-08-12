@@ -60,7 +60,7 @@ public class TrackDietTab extends Fragment {
         LineChart lineChart = view.findViewById(R.id.track_line_chart);
 
         // Assign the Bar Chart
-        BarChart barChart = view.findViewById(R.id.track_bar_chart);
+        BarChart barChart = view.findViewById(R.id.track_water_intake_bar_chart);
 
         // Now assign Bar Chart entries and fill values
         ArrayList<BarEntry> entries = new ArrayList<>();

@@ -374,80 +374,84 @@
             app:layout_constraintTop_toBottomOf="@+id/track_chart_label"
             android:orientation="vertical" >
 
+            <!-- Card View for nutrient intake graph -->
             <androidx.cardview.widget.CardView
                 android:id="@+id/track_line_chart_card"
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
+                android:layout_height="wrap_content"
                 android:layout_margin="20dp"
                 app:cardCornerRadius="20dp">
 
+                <!-- Linear Layout for nutrient intake graph -->
                 <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
-
-                <com.google.android.material.tabs.TabLayout
-                    android:id="@+id/tab_layout"
+                    android:id="@+id/track_line_chart_linear_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:tabGravity="fill"
-                    app:tabIndicatorFullWidth="true"
-                    app:tabMaxWidth="0dp"
-                    app:tabMode="fixed">
+                    android:orientation="vertical">
 
-                    <!-- Tab items     android:backgroundTint="@color/white" -->
-                    <!-- Add meal Tab -->
-                    <com.google.android.material.tabs.TabItem
-                        android:id="@+id/home_add_meal_tab_item"
+                    <!-- Tab Layout for nutrient selection for line chart -->
+                    <com.google.android.material.tabs.TabLayout
+                        android:id="@+id/track_line_chart_tab_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Energy" />
+                        app:tabGravity="fill"
+                        app:tabIndicatorFullWidth="true"
+                        app:tabMaxWidth="0dp"
+                        app:tabMode="fixed">
 
-                    <!-- View Meal Tab -->
-                    <com.google.android.material.tabs.TabItem
-                        android:id="@+id/home_view_meal_tab_item"
+                        <!-- Tab items -->
+                        <!-- Energy selection tab -->
+                        <com.google.android.material.tabs.TabItem
+                            android:id="@+id/track_line_chart_energy_tab"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Energy" />
+
+                        <!-- Proteins selection tab -->
+                        <com.google.android.material.tabs.TabItem
+                            android:id="@+id/track_line_chart_proteins_tab"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Protein" />
+
+                        <!-- Fats selection tab -->
+                        <com.google.android.material.tabs.TabItem
+                            android:id="@+id/track_line_chart_fats_tab"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Fats" />
+
+                        <!-- Carbs selection tab -->
+                        <com.google.android.material.tabs.TabItem
+                            android:id="@+id/track_line_chart_carbs_tab"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Carbs."  />
+
+                    </com.google.android.material.tabs.TabLayout>
+
+                    <!-- Line chart for nutrient intake visualization -->
+                    <com.github.mikephil.charting.charts.LineChart
+                        android:id="@+id/track_line_chart"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Protein" />
-
-                    <!-- Track diet Tab -->
-                    <com.google.android.material.tabs.TabItem
-                        android:id="@+id/home_track_meal_tab_item"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Fats" />
-
-                    <!-- Services Tab -->
-                    <com.google.android.material.tabs.TabItem
-                        android:id="@+id/home_services_tab_item"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Carbs."  />
-
-                </com.google.android.material.tabs.TabLayout>
-
-                <!-- Bar chart for BarGraph-->
-                <com.github.mikephil.charting.charts.LineChart
-                    android:id="@+id/track_line_chart"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_margin="10dp" />
+                        android:layout_height="200dp"
+                        android:layout_margin="10dp" />
 
                 </LinearLayout>
 
             </androidx.cardview.widget.CardView>
 
-            <!-- Card View for BarGraph-->
+            <!-- Card View for bar graph of water intake visualization -->
             <androidx.cardview.widget.CardView
-                android:id="@+id/track_bar_chart_card"
+                android:id="@+id/track_water_intake_bar_chart_card"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:layout_margin="20dp"
                 app:cardCornerRadius="20dp">
 
-                <!-- Bar chart for BarGraph-->
+                <!-- Bar chart for water intake visualization -->
                 <com.github.mikephil.charting.charts.BarChart
-                    android:id="@+id/track_bar_chart"
+                    android:id="@+id/track_water_intake_bar_chart"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_margin="10dp" />
