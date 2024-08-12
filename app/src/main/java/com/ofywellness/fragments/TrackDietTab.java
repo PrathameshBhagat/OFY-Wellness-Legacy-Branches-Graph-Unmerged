@@ -1,5 +1,7 @@
 package com.ofywellness.fragments;
 
+import android.graphics.Color;
+import android.graphics.DashPathEffect;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,10 +13,15 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.ofywellness.R;
 import com.ofywellness.db.ofyDatabase;
@@ -49,8 +56,11 @@ public class TrackDietTab extends Fragment {
         fatsProgressBar = view.findViewById(R.id.track_fats_progress_bar);
         carbohydratesProgressBar = view.findViewById(R.id.track_carbohydrates_progress_bar);
 
+        // Assign the Line Graph
+        LineChart lineChart = view.findViewById(R.id.track_line_chart);
+
         // Assign the Bar Chart
-        BarChart barChart = view.findViewById(R.id.bar);
+        BarChart barChart = view.findViewById(R.id.track_bar_chart);
 
         // Now assign Bar Chart entries and fill values
         ArrayList<BarEntry> entries = new ArrayList<>();
@@ -72,6 +82,8 @@ public class TrackDietTab extends Fragment {
         // Array of Days in a week for bar chart labels
         String[] days = {"Sun", "Mon", "Tue", "Wed", "Thr", "Fri", "Sat"};
 
+        barChart.getAxisRight().setEnabled(false);
+
         // Now we get our bar chart's X-axis and set it to show relevant labels
         XAxis barXAxis = barChart.getXAxis();
         barXAxis.setGranularity(1f);
@@ -83,13 +95,58 @@ public class TrackDietTab extends Fragment {
 
         // Show/Refresh the bar chart
         barChart.invalidate();
+
+        setLineChart(view);
+
         // Update tracking tracking data as soon as this tab loads
         updateDietTrackingData();
         // Return view to onCreateView method and the method
         return view;
     }
 
+    void setLineChart(View view){
 
+        // Assign the Line Graph
+        LineChart lineChart = view.findViewById(R.id.track_line_chart);
+        lineChart.getDescription().setEnabled(false);
+        lineChart.setOutlineAmbientShadowColor(Color.WHITE);
+
+
+        ArrayList<Entry> entries = new ArrayList<>();
+        entries.add(new Entry(1,10));
+        entries.add(new Entry(2,20));
+        entries.add(new Entry(3,30));
+        entries.add(new Entry(4,40));
+        entries.add(new Entry(5,50));
+        entries.add(new Entry(6,60));
+        entries.add(new Entry(7,70));
+
+        LineDataSet lineDataset = new LineDataSet(entries, "");
+        lineDataset.setColor(Color.BLACK);
+        lineDataset.setCircleColor(Color.BLUE);
+
+
+        // Create a data for our bar chart
+        LineData lineData = new LineData(lineDataset);
+
+
+        String[] days = {"","Sun", "Mon", "Tue", "Wed", "Thr", "Fri", "Sat"};
+
+        lineChart.getAxisRight().setEnabled(false);
+
+        YAxis lineYAxis = lineChart.getAxisLeft();
+        lineYAxis.setAxisMinimum(0f);
+
+
+        XAxis lineXAxis = lineChart.getXAxis();
+        lineXAxis.setValueFormatter((value, axis) -> days[((int) value)]);
+        lineXAxis.setDrawGridLines(false);
+        lineXAxis.setAxisMinimum(0.5f);
+
+        lineChart.setData(lineData);
+        lineChart.animateXY(6000,6000);
+
+    }
     // Update tracking data each time user clicks update button
     void updateDietTrackingData() {
 

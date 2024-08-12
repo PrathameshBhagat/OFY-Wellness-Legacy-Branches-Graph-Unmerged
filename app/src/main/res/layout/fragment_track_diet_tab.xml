@@ -353,7 +353,7 @@
 
         <!-- Text View for experimental features label -->
         <TextView
-            android:id="@+id/bar_chart_label"
+            android:id="@+id/track_chart_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
@@ -371,24 +371,89 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/bar_chart_label">
+            app:layout_constraintTop_toBottomOf="@+id/track_chart_label"
+            android:orientation="vertical" >
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/track_line_chart_card"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:layout_margin="20dp"
+                app:cardCornerRadius="20dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                <com.google.android.material.tabs.TabLayout
+                    android:id="@+id/tab_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:tabGravity="fill"
+                    app:tabIndicatorFullWidth="true"
+                    app:tabMaxWidth="0dp"
+                    app:tabMode="fixed">
+
+                    <!-- Tab items     android:backgroundTint="@color/white" -->
+                    <!-- Add meal Tab -->
+                    <com.google.android.material.tabs.TabItem
+                        android:id="@+id/home_add_meal_tab_item"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Energy" />
+
+                    <!-- View Meal Tab -->
+                    <com.google.android.material.tabs.TabItem
+                        android:id="@+id/home_view_meal_tab_item"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Protein" />
+
+                    <!-- Track diet Tab -->
+                    <com.google.android.material.tabs.TabItem
+                        android:id="@+id/home_track_meal_tab_item"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Fats" />
+
+                    <!-- Services Tab -->
+                    <com.google.android.material.tabs.TabItem
+                        android:id="@+id/home_services_tab_item"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Carbs."  />
+
+                </com.google.android.material.tabs.TabLayout>
+
+                <!-- Bar chart for BarGraph-->
+                <com.github.mikephil.charting.charts.LineChart
+                    android:id="@+id/track_line_chart"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="10dp" />
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
 
             <!-- Card View for BarGraph-->
             <androidx.cardview.widget.CardView
-                android:id="@+id/bar_chart_card"
+                android:id="@+id/track_bar_chart_card"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                android:layout_margin="30dp"
+                android:layout_margin="20dp"
                 app:cardCornerRadius="20dp">
 
                 <!-- Bar chart for BarGraph-->
                 <com.github.mikephil.charting.charts.BarChart
-                    android:id="@+id/bar"
+                    android:id="@+id/track_bar_chart"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_margin="10dp" />
 
             </androidx.cardview.widget.CardView>
+
 
         </LinearLayout>
 
