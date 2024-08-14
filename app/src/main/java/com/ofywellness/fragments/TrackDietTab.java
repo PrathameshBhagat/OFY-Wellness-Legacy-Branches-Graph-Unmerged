@@ -25,7 +25,6 @@ import com.ofywellness.R;
 import com.ofywellness.db.ofyDatabase;
 import com.ofywellness.modals.Meal;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -93,53 +92,81 @@ public class TrackDietTab extends Fragment {
         }
     }
 
-    public void setBarChart(HashMap<String, Integer> map) {
+    public void setBarChartWithWaterIntakeData(HashMap<String, Integer> waterIntakeDataMap) {
 
+        // Hide the description of the bar chart, we don't need it
+        barChart.getDescription().setEnabled(false);
 
-        // List of Days in a week for bar chart labels
+        // List for storing days for bar chart labels
         LinkedList<String> days = new LinkedList<>();
 
-        // Assign Bar Chart entries and fill values
+        // Entries for Bar Chart
         ArrayList<BarEntry> barEntries = new ArrayList<>();
 
+        // Integer for X values of the chart
         int i = 1;
 
-        for (Map.Entry<String, Integer> waterIntakeEntries : map.entrySet()) {
+        // Iterate over and convert intake data to bar chart entries
+        for (Map.Entry<String, Integer> waterIntakeEntries : waterIntakeDataMap.entrySet()) {
+
+            // Fill bar chart entries { X : [ 1,2,3,...], Y : [10,1,5,8,7,..] }
             barEntries.add(new BarEntry(i++, waterIntakeEntries.getValue()));
+
+            // Add date labels
             days.add(waterIntakeEntries.getKey());
         }
 
-        // Create a DataSet for our Bar chart and set its colors
+        // Create a DataSet for bar chart
         BarDataSet barDataset = new BarDataSet(barEntries,"");
+        // Set colors for the chart
         barDataset.setColors(ColorTemplate.COLORFUL_COLORS);
 
-        // Create a data for our bar chart
+        // Create a data object for our bar chart
         BarData barData = new BarData(barDataset);
 
-
+        // Get the right axis and disable it as it's not needed
         barChart.getAxisRight().setEnabled(false);
 
-        // Now we get our bar chart's X-axis and set it to show relevant labels
+        // Now we get our bar chart's X-axis
         XAxis barXAxis = barChart.getXAxis();
+        // Set granularity to 1 so that the X values don't repeat themselves on zoom
         barXAxis.setGranularity(1f);
-        barXAxis.setPosition(XAxis.XAxisPosition.TOP);
+        // Set x-axis position to bottom (default - top)
+        barXAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        // Hide the grid lines as they are not required
+        barXAxis.setDrawGridLines(false);
+
+        // Set the X-axis to show relevant labels
         barXAxis.setValueFormatter((value, axis) ->
         {
+            // Simple try-catch block
             try {
-                return new SimpleDateFormat("MMM dd", Locale.ENGLISH).format(
-                        new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(
-                                days.get((int) value - 1)));
-            } catch (ParseException e) {
-                throw new RuntimeException(e);
+
+                // Get the day from list of days to be mapped
+                String date = days.get((int) value - 1);
+
+                // Now parse the date string to a date object
+                Date dateObj = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(date);
+
+                // Return the date in "Jan 13" like format
+                return new SimpleDateFormat("MMM dd", Locale.ENGLISH).format(dateObj);
+
+            } catch (Exception e) {
+                // If exception occurs, show a toast
+                Toast.makeText(requireActivity(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+
+                // And return a string with error text for each entry
+                return "Error";
             }
         });
 
-        // Now Set the data for the bar chart and set its animation
+        // Now set the data and animation for the bar chart
         barChart.setData(barData);
-        barChart.animateY(6000);
+        barChart.animateY(5000);
 
         // Show/Refresh the bar chart
         barChart.invalidate();
+
     }
 
     // Method to set the line chart

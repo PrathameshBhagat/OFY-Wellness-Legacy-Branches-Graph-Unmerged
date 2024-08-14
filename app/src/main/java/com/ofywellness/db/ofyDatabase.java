@@ -5,7 +5,6 @@ import static androidx.core.content.ContextCompat.startActivity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -617,42 +616,54 @@ public class ofyDatabase {
     }
 
     /**
-     * Gets all the other measures like water and weight from database abd sets charts
+     * Gets all the other measures like water and weight from database and sets the charts
      *
-     * @param trackDietTab HashMap with the data of all other measures
+     * @param trackDietTab Track Diet tab object to call it's methods
      */
     public static void getOtherDataAndSetCharts(TrackDietTab trackDietTab) {
-        // Context for toast message
+        // Get context showing for toast messages
         Context context = trackDietTab.getContext();
 
+        // Query the required data
         Query query = ofyDatabaseref.child("Other").limitToLast(7);
 
+        // Add listener to listen all changes
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                // Check if the data exists 
                 if (snapshot.exists()) {
 
+                    // Create maps to store the data
+                    // Map to store water intake
                     HashMap<String, Integer> waterMap = new HashMap<>();
 
+                    // Map to store weight data
                     HashMap<String, Integer> weightMap = new HashMap<>();
 
-                    for (DataSnapshot otherData : snapshot.getChildren()) {
+                    // Iterate for each date and get the data
+                    for (DataSnapshot loggedDataForIndividualDate : snapshot.getChildren()) {
 
-                        String key = otherData.getKey();
+                        // Store the date, which is the key for this location
+                        String key = loggedDataForIndividualDate.getKey();
 
-                        HashMap tempMap = (HashMap) otherData.getValue();
+                        // Get the logged data in the form of a map
+                        HashMap tempMap = (HashMap) loggedDataForIndividualDate.getValue();
 
+                        // Store water intake data in the water map
                         waterMap.put(key, ((Long) tempMap.get("Water")).intValue());
 
+                        // Store weight data in the  weight map
                         weightMap.put(key, ((Long) tempMap.get("Weight")).intValue());
 
                     }
 
-                    trackDietTab.setBarChart(waterMap);
+                    // Set the bar chart with water intake data
+                    trackDietTab.setBarChartWithWaterIntakeData(waterMap);
 
                 } else {
                     // If data does not exists throw an error
-                    throw new RuntimeException("Data does not exists");
+                    Toast.makeText(context, "Error: Data not found", Toast.LENGTH_SHORT).show();
                 }
             }
 
