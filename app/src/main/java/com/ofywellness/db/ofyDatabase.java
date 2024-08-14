@@ -661,6 +661,9 @@ public class ofyDatabase {
                     // Set the bar chart with water intake data
                     trackDietTab.setBarChartWithWaterIntakeData(waterMap);
 
+                    // Set the curved line chart with daily weight data
+                    trackDietTab.setCurvedLineChartWithDailyWeightData(weightMap);
+
                 } else {
                     // If data does not exists throw an error
                     Toast.makeText(context, "Error: Data not found", Toast.LENGTH_SHORT).show();

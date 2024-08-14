@@ -9,6 +9,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.github.mikephil.charting.charts.BarChart;
@@ -43,7 +44,7 @@ public class TrackDietTab extends Fragment {
     private TextView energyValueLabel, proteinsValueLabel, fatsValueLabel, carbohydratesValueLabel;
     private ProgressBar energyProgressBar, proteinsProgressBar, fatsProgressBar, carbohydratesProgressBar;
     private BarChart barChart;
-    private LineChart lineChart;
+    private LineChart lineChart, curvedLineChart;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Get the view for this fragment and inflate it
@@ -63,6 +64,9 @@ public class TrackDietTab extends Fragment {
 
         // Assign the Line Graph
         lineChart = view.findViewById(R.id.track_line_chart);
+
+        // Assign the curved line chart
+        curvedLineChart = view.findViewById(R.id.track_weight_curved_line_chart);
 
         // Assign the Bar Chart
         barChart = view.findViewById(R.id.track_water_intake_bar_chart);
@@ -166,6 +170,101 @@ public class TrackDietTab extends Fragment {
 
         // Show/Refresh the bar chart
         barChart.invalidate();
+
+    }
+
+    // Method to set the weight tracker line chart (called by ofyDatabase method)
+    public void setCurvedLineChartWithDailyWeightData(HashMap<String, Integer> weightDataMap) {
+
+        // Hide the description of the chart, we don't need it
+        curvedLineChart.getDescription().setEnabled(false);
+
+        // List for storing days for chart labels
+        LinkedList<String> days = new LinkedList<>();
+
+        // Entries for the chart
+        ArrayList<Entry> curvedLineEntries = new ArrayList<>();
+
+        // Integer for X-axis values of the chart
+        int i = 1;
+
+        // Iterate over and convert daily weight data to chart entries
+        for (Map.Entry<String, Integer> dailyWeightEntries : weightDataMap.entrySet()) {
+
+            // Fill chart entries { X : [ 1,2,3,...], Y : [10,1,5,8,7,...] }
+            curvedLineEntries.add(new Entry(i++, dailyWeightEntries.getValue()));
+
+            // Add date/day labels
+            days.add(dailyWeightEntries.getKey());
+        }
+
+
+        // Create the dataset for the line chart
+        LineDataSet curvedLineDataSet = new LineDataSet(curvedLineEntries, "");
+
+        // Set the line color to black and circle (point) color to blue
+        curvedLineDataSet.setColor(Color.BLACK);
+        curvedLineDataSet.setCircleColor(Color.BLUE);
+
+        // Make the line chart curved/smooth
+        curvedLineDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+
+        // Make the chart fill the area below the line/curve and set the drawable to fill it with
+        curvedLineDataSet.setDrawFilled(true);
+        curvedLineDataSet.setFillDrawable(ContextCompat.getDrawable(getContext(), R.drawable.home_background));
+
+
+        // Create a data object for our curved line chart from the dataset
+        LineData lineData = new LineData(curvedLineDataSet);
+
+        // Hide the right axis as we do not need a right axis for this chart
+        curvedLineChart.getAxisRight().setEnabled(false);
+
+        // Get the left axis and make it start with 0th point
+        curvedLineChart.getAxisLeft().setAxisMinimum(0f);
+
+        // Get the X-axis of the curved line chart
+        XAxis lineXAxis = curvedLineChart.getXAxis();
+
+        // Remove grid lines and set axis minimum to 0.5
+        lineXAxis.setDrawGridLines(false);
+        lineXAxis.setAxisMinimum(0.5f);
+
+        // Set X-axis position to bottom (default - top)
+        lineXAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+
+        // Set granularity to 1 so that on zoom the X-axis values do not get repeated
+        lineXAxis.setGranularity(1f);
+
+        // Now set its labels via value formatter
+        lineXAxis.setValueFormatter((value, axis) ->
+        {
+            // Simple try-catch block
+            try {
+
+                // Get the exact day from list of days to be mapped
+                String date = days.get((int) value - 1);
+
+                // Now parse the date string to a date object
+                Date dateObj = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(date);
+
+                // Return the date in "Jan 13" like format
+                return new SimpleDateFormat("MMM dd", Locale.ENGLISH).format(dateObj);
+
+            } catch (Exception e) {
+                // If exception occurs, show a toast
+                Toast.makeText(requireActivity(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+
+                // And return a string with error text for each entry
+                return "Error";
+            }
+        });
+
+        // Now set the line chart's animation
+        curvedLineChart.animateY(5000);
+
+        // Finally set the data
+        curvedLineChart.setData(lineData);
 
     }
 
