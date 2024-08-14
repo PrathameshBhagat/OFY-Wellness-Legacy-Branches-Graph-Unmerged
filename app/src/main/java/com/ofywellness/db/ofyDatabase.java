@@ -5,6 +5,7 @@ import static androidx.core.content.ContextCompat.startActivity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,15 +22,16 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.annotations.NotNull;
 import com.ofywellness.HomeActivity;
 import com.ofywellness.R;
 import com.ofywellness.fragments.TrackDietTab;
-import com.ofywellness.register.RegisterActivity;
 import com.ofywellness.fragments.ViewMealTab;
 import com.ofywellness.modals.Meal;
 import com.ofywellness.modals.User;
+import com.ofywellness.register.RegisterActivity;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -612,5 +614,55 @@ public class ofyDatabase {
             Toast.makeText(context, "Error updating other counts ", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Gets all the other measures like water and weight from database abd sets charts
+     *
+     * @param trackDietTab HashMap with the data of all other measures
+     */
+    public static void getOtherDataAndSetCharts(TrackDietTab trackDietTab) {
+        // Context for toast message
+        Context context = trackDietTab.getContext();
+
+        Query query = ofyDatabaseref.child("Other").limitToLast(7);
+
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+
+                    HashMap<String, Integer> waterMap = new HashMap<>();
+
+                    HashMap<String, Integer> weightMap = new HashMap<>();
+
+                    for (DataSnapshot otherData : snapshot.getChildren()) {
+
+                        String key = otherData.getKey();
+
+                        HashMap tempMap = (HashMap) otherData.getValue();
+
+                        waterMap.put(key, ((Long) tempMap.get("Water")).intValue());
+
+                        weightMap.put(key, ((Long) tempMap.get("Weight")).intValue());
+
+                    }
+
+                    trackDietTab.setBarChart(waterMap);
+
+                } else {
+                    // If data does not exists throw an error
+                    throw new RuntimeException("Data does not exists");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Catch exception, show a toast error message and print error stack
+                Toast.makeText(context, "Error:" + error.getMessage(), Toast.LENGTH_SHORT).show();
+                error.toException().printStackTrace();
+            }
+        });
+
     }
 }
