@@ -1,5 +1,11 @@
 package com.ofywellness.fragments;
 
+import static com.ofywellness.fragments.TrackDietTab.lineChartMode.CARBOHYDRATES;
+import static com.ofywellness.fragments.TrackDietTab.lineChartMode.ENERGY;
+import static com.ofywellness.fragments.TrackDietTab.lineChartMode.FATS;
+import static com.ofywellness.fragments.TrackDietTab.lineChartMode.PROTEINS;
+
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -22,6 +28,7 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.google.android.material.tabs.TabLayout;
 import com.ofywellness.R;
 import com.ofywellness.db.ofyDatabase;
 import com.ofywellness.modals.Meal;
@@ -30,6 +37,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Map;
@@ -41,6 +49,7 @@ public class TrackDietTab extends Fragment {
 
     /* TODO : Remove the TextView assignment and context to database operation method */
 
+    public lineChartMode nutrientLineChartMode;
     private TextView energyValueLabel, proteinsValueLabel, fatsValueLabel, carbohydratesValueLabel;
     private ProgressBar energyProgressBar, proteinsProgressBar, fatsProgressBar, carbohydratesProgressBar;
     private BarChart barChart;
@@ -65,23 +74,77 @@ public class TrackDietTab extends Fragment {
         // Assign the Line Graph
         lineChart = view.findViewById(R.id.track_line_chart);
 
+        // Set the default Mode for line chart
+        nutrientLineChartMode = ENERGY;
+
         // Assign the curved line chart
         curvedLineChart = view.findViewById(R.id.track_weight_curved_line_chart);
 
         // Assign the Bar Chart
         barChart = view.findViewById(R.id.track_water_intake_bar_chart);
 
-        updateChart();
-        // Call the method to set the line graph
-        setLineChart();
+        // Add on tab selected listener to the tab layout
+        ((TabLayout) view.findViewById(R.id.track_line_chart_tab_layout)).addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                // Get the tabs position
+                int tabPosition = tab.getPosition();
 
-        // Update tracking tracking data as soon as this tab loads
+                // Change the line chart mode according to the tab position
+                if (tabPosition == 0)
+                    nutrientLineChartMode = ENERGY;
+                else if (tabPosition == 1)
+                    nutrientLineChartMode = PROTEINS;
+                else if (tabPosition == 2)
+                    nutrientLineChartMode = FATS;
+                else if (tabPosition == 3)
+                    nutrientLineChartMode = CARBOHYDRATES;
+
+                // Update the chart
+                updateChartWithNutrientIntakeData();
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+
+        // Now we update all the data once on start as soon as this tab loads
+        // Update Diet data
+        updateChartWithNutrientIntakeData();
+        // Update all other data
+        updateChartWithOtherData();
+        // Update diet tracking data
         updateDietTrackingData();
+
         // Return view to onCreateView method and the method
         return view;
     }
 
-    private void updateChart() {
+    // Update chart with diet data
+    private void updateChartWithNutrientIntakeData() {
+
+        // Simple try catch block to catch any errors and exceptions
+        try {
+
+            // Call the method to get the "updated" tracking data and set the text views to the tracking data
+            ofyDatabase.getDietDataAndSetNutrientCharts(this);
+
+        } catch (Exception e) {
+            // Catch exception and show toast message
+            Toast.makeText(requireActivity(), "Error:" + e, Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
+    }
+
+    // Update chart with "other" data
+    private void updateChartWithOtherData() {
 
         // Simple try catch block to catch any errors and exceptions
         try {
@@ -174,7 +237,7 @@ public class TrackDietTab extends Fragment {
     }
 
     // Method to set the weight tracker line chart (called by ofyDatabase method)
-    public void setCurvedLineChartWithDailyWeightData(HashMap<String, Integer> weightDataMap) {
+    public void setCurvedLineChartWithDailyWeightData(HashMap<String, Integer> weightDataMap, Context context) {
 
         // Hide the description of the chart, we don't need it
         curvedLineChart.getDescription().setEnabled(false);
@@ -211,7 +274,7 @@ public class TrackDietTab extends Fragment {
 
         // Make the chart fill the area below the line/curve and set the drawable to fill it with
         curvedLineDataSet.setDrawFilled(true);
-        curvedLineDataSet.setFillDrawable(ContextCompat.getDrawable(getContext(), R.drawable.home_background));
+        curvedLineDataSet.setFillDrawable(ContextCompat.getDrawable(context, R.drawable.home_background));
 
 
         // Create a data object for our curved line chart from the dataset
@@ -268,34 +331,49 @@ public class TrackDietTab extends Fragment {
 
     }
 
-    // Method to set the line chart
-    void setLineChart() {
+    // Method to set the line chart with diet intake data 
+    public void setLineChartWithDietIntakeData(LinkedHashMap<String, Float> nutrientMap, Context context) {
 
         // Hide the description of the line chart, we don't need it
         lineChart.getDescription().setEnabled(false);
 
-        // Get dummy entries
-        ArrayList<Entry> entries = new ArrayList<>();
-        entries.add(new Entry(1,10));
-        entries.add(new Entry(2,20));
-        entries.add(new Entry(3,30));
-        entries.add(new Entry(4,40));
-        entries.add(new Entry(5,50));
-        entries.add(new Entry(6,60));
-        entries.add(new Entry(7,70));
+
+        // List for storing days for chart labels
+        LinkedList<String> days = new LinkedList<>();
+
+        // Entries for the chart
+        ArrayList<Entry> lineChartEntries = new ArrayList<>();
+        // Integer for X-axis values of the chart
+        int i = 1;
+
+        // Iterate over and convert daily weight data to chart entries
+        for (Map.Entry<String, Float> nutrientEntries : nutrientMap.entrySet()) {
+
+            // Fill chart entries { X : [ 1,2,3,...], Y : [10,1,5,8,7,...] }
+            lineChartEntries.add(new Entry(i++, nutrientEntries.getValue()));
+
+            // Add date/day labels
+            days.add(nutrientEntries.getKey());
+        }
 
         // Create the dataset for the line chart
-        LineDataSet lineDataset = new LineDataSet(entries, "");
+        LineDataSet lineDataset = new LineDataSet(lineChartEntries, "");
 
         // Set the line color to black and circle (point) color to blue
         lineDataset.setColor(Color.BLACK);
         lineDataset.setCircleColor(Color.BLUE);
 
+
+        // Make the chart fill the area below the line/curve and set the drawable to fill it with
+        lineDataset.setDrawFilled(true);
+        lineDataset.setFillDrawable(ContextCompat.getDrawable(context, R.drawable.img_head_background));
+
+        // Make the chart to make the graph line curved
+        lineDataset.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+
         // Create a data for our line chart from the dataset
         LineData lineData = new LineData(lineDataset);
 
-        // String of days (first date needs to be empty as the X-axis's minimum is 0.5)
-        String[] days = {"","Sun", "Mon", "Tue", "Wed", "Thr", "Fri", "Sat"};
 
         // Hide the right axis as we do not need a right axis for this chart
         lineChart.getAxisRight().setEnabled(false);
@@ -306,23 +384,49 @@ public class TrackDietTab extends Fragment {
         // Get the x axis of line chart
         XAxis lineXAxis = lineChart.getXAxis();
 
-        // Remove grid lines and set axis minimum to 0.5
+        // Hide the grid lines for this axis and set its minimum to 0.5 
         lineXAxis.setDrawGridLines(false);
         lineXAxis.setAxisMinimum(0.5f);
+
+        // Set the X-axis position to bottom (default-top)
+        lineXAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+
 
         // Set granularity to 1 so that on zoom the X values do not get repeated
         lineXAxis.setGranularity(1f);
 
         // Now set its labels via value formatter, note here's no "-1", as minimum is 0.5 and not 0
-        lineXAxis.setValueFormatter((value, axis) -> days[((int) value)]);
+        lineXAxis.setValueFormatter((value, axis) ->
+        {
+            // Simple try-catch block
+            try {
+
+                // Get the exact day from list of days to be mapped
+                String date = days.get((int) value - 1);
+
+                // Now parse the date string to a date object
+                Date dateObj = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(date);
+
+                // Return the date in "Jan 13" like format
+                return new SimpleDateFormat("MMM dd", Locale.ENGLISH).format(dateObj);
+
+            } catch (Exception e) {
+                // If exception occurs, show a toast
+                Toast.makeText(requireActivity(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+
+                // And return a string with error text for each entry
+                return "Error";
+            }
+        });
 
         // Now set the line chart's animation
-        lineChart.animateY(6000);
+        lineChart.animateY(5000);
 
         // Finally set the data
         lineChart.setData(lineData);
 
     }
+
     // Update tracking data each time user clicks update button
     void updateDietTrackingData() {
 
@@ -368,4 +472,6 @@ public class TrackDietTab extends Fragment {
             e.printStackTrace();
         }
     }
+
+    public enum lineChartMode {ENERGY, PROTEINS, FATS, CARBOHYDRATES}
 }
