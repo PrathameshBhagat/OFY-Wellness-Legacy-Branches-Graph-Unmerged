@@ -27,7 +27,7 @@
                 android:layout_margin="20dp"
                 android:text="Male"
                 android:textColor="#49569E"
-                android:textSize="40sp"
+                android:textSize="30sp"
                 android:textStyle="bold" />
 
         </androidx.cardview.widget.CardView>
@@ -47,7 +47,7 @@
                 android:layout_margin="20dp"
                 android:text="Female"
                 android:textColor="#49569E"
-                android:textSize="40sp"
+                android:textSize="30sp"
                 android:textStyle="bold" />
 
         </androidx.cardview.widget.CardView>

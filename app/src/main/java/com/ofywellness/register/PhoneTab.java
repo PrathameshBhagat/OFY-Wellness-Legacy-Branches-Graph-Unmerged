@@ -34,6 +34,10 @@ public class PhoneTab extends Fragment {
                 // If phone is not a 10 digit number make a toast to show message to user and return
                 Toast.makeText(requireActivity(), "Phone should be a 10 digit number", Toast.LENGTH_SHORT).show();
                 return;
+            } else if (phone.contains(".")) {
+                // If phone contains a dot (.), make a toast to show message to user and return
+                Toast.makeText(requireActivity(), "Phone should not have a dot (.) ", Toast.LENGTH_SHORT).show();
+                return;
             }
 
             // Set the user's phone number
