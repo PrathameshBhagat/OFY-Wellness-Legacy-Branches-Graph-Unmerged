@@ -25,6 +25,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.annotations.NotNull;
 import com.ofywellness.HomeActivity;
 import com.ofywellness.R;
+import com.ofywellness.fragments.AddIntakeTab;
 import com.ofywellness.fragments.TrackDietTab;
 import com.ofywellness.fragments.ViewMealTab;
 import com.ofywellness.modals.Meal;
@@ -626,4 +627,55 @@ public class ofyDatabase {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Gets today's all the other measures (like water intake) and update's views with logged data
+     *
+     * @param view         AddIntakeTab's view to update its other views
+     * @param addIntakeTab AddIntakeTab for error message display
+     */
+    public static void getTodaysLoggedOtherMeasuresAndUpdateViews(View view, AddIntakeTab addIntakeTab) {
+
+        // Context for showing toast messages
+        Context context = addIntakeTab.getContext();
+
+        // Simple try catch block
+        try {
+
+            // Get today's all the other user measures like weight and water intake and update views
+            ofyDatabaseref.child("Other").child(String.valueOf(LocalDate.now())).get().addOnSuccessListener(task -> {
+
+                // Simple try catch block
+                try {
+
+                    // Map to store all other saved measures
+                    HashMap measures = (HashMap) task.getValue();
+
+                    // If the measures contains water intake
+                    if (measures.containsKey("Water")) {
+                        // Then set today's water intake in the respective text view
+                        ((TextView) view.findViewById(R.id.add_other_water_detail_label))
+                                .setText(addIntakeTab.getString(R.string.Water_Intake, measures.get("Water")));
+                    }
+                    // If the saved measures contains logged weight
+                    if (measures.containsKey("Weight")) {
+                        // Then set today's recorded weight in the respective text view
+                        ((TextView) view.findViewById(R.id.add_other_weight_detail_label))
+                                .setText(addIntakeTab.getString(R.string.Weight_Logged, measures.get("Weight")));
+                    }
+
+                } catch (Exception e) {
+                    // Catch exception, show a toast error message and print error stack
+                    Toast.makeText(context, "Error updating other measures", Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                }
+
+            });
+        } catch (Exception e) {
+            // Catch exception, show a toast error message and print error stack
+            Toast.makeText(context, "Error updating other measures", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
+    }
+
 }
