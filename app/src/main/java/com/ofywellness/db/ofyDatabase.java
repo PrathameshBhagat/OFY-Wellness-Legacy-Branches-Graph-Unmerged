@@ -393,19 +393,19 @@ public class ofyDatabase {
 
 
     /**
-     * Gets all the diet intake data and set the charts
+     * Gets all the diet intake data and sets the charts
      *
      * @param trackDietTab Track Diet tab object to call it's methods
      */
     public static void getDietDataAndSetNutrientCharts(TrackDietTab trackDietTab) {
 
-        // Get context showing for toast messages
+        // Get context for showing toast messages
         Context context = trackDietTab.getContext();
 
-        // Query the last 7 records of the required data
+        // Query the last 7 records of the required data, ordered by their keys
         Query query = ofyDatabaseref.child("Diet").orderByKey().limitToLast(7);
 
-        // Add listener to listen all changes
+        // Add a listener to listen to all changes to the data and show updated data to the user
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -428,7 +428,7 @@ public class ofyDatabase {
                     // Loop through all the days
                     for (DataSnapshot ofyDateDataSnapshot : snapshot.getChildren()) {
 
-                        // Reset the variables for this day
+                        // Reset the variables for "this" day
                         totalEnergy = 0;
                         totalProteins = 0;
                         totalFats = 0;
@@ -440,7 +440,7 @@ public class ofyDatabase {
                             // Convert meal data into a HashMap
                             HashMap mealContent = (HashMap) ofyMealSnapshot.getValue();
 
-                            // Calculate the total in take of a day
+                            // Calculate the total intake of "this" day
                             totalEnergy += (Long) mealContent.get("energy");
                             totalProteins += (Long) mealContent.get("proteins");
                             totalFats += (Long) mealContent.get("fats");
@@ -458,8 +458,8 @@ public class ofyDatabase {
 
                     }
 
-                    // Get map to store current nutrient map to display,
-                    // As ony one nutrient's data is to be shown to the user
+                    // Get a linked hash map to store current nutrient map to display,
+                    // As only one nutrient's data is to be shown to the user
                     LinkedHashMap<String, Float> nutrientMapToDisplay = new LinkedHashMap<>();
 
                     // Switch the map to be displayed according to current nutrient mode
@@ -730,25 +730,25 @@ public class ofyDatabase {
      * @param trackDietTab Track Diet tab object to call it's methods
      */
     public static void getOtherDataAndSetCharts(TrackDietTab trackDietTab) {
-        // Get context showing for toast messages
+        // Get context for showing toast messages
         Context context = trackDietTab.getContext();
 
-        // Query the required data
-        Query query = ofyDatabaseref.child("Other").limitToLast(7);
+        // Query the required data, ordered by their keys
+        Query query = ofyDatabaseref.child("Other").orderByKey().limitToLast(7);
 
-        // Add listener to listen all changes
+        // Add a listener to listen to all changes to the data and show updated data to the user
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 // Check if the data exists 
                 if (snapshot.exists()) {
 
-                    // Create maps to store the data
+                    // Create linked hash maps to store the "other" data in an orderly manner
                     // Map to store water intake
-                    HashMap<String, Integer> waterMap = new HashMap<>();
+                    LinkedHashMap<String, Integer> waterMap = new LinkedHashMap<>();
 
                     // Map to store weight data
-                    HashMap<String, Integer> weightMap = new HashMap<>();
+                    LinkedHashMap<String, Integer> weightMap = new LinkedHashMap<>();
 
                     // Iterate for each date and get the data
                     for (DataSnapshot loggedDataForIndividualDate : snapshot.getChildren()) {
@@ -756,7 +756,7 @@ public class ofyDatabase {
                         // Store the date, which is the key for this location
                         String key = loggedDataForIndividualDate.getKey();
 
-                        // Get the logged data in the form of a map
+                        // Get the logged "other" data in the form of a map
                         HashMap tempMap = (HashMap) loggedDataForIndividualDate.getValue();
 
                         // Store water intake data in the water map

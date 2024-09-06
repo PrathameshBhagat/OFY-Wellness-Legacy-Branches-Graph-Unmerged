@@ -100,7 +100,7 @@ public class TrackDietTab extends Fragment {
                 else if (tabPosition == 3)
                     nutrientLineChartMode = CARBOHYDRATES;
 
-                // Update the chart
+                // Update the line chart with intake data of appropriate nutrient
                 updateChartWithNutrientIntakeData();
             }
 
@@ -149,7 +149,7 @@ public class TrackDietTab extends Fragment {
         // Simple try catch block to catch any errors and exceptions
         try {
 
-            // Call the method to get the "updated" tracking data and set the text views to the tracking data
+            // Call the method to get the "other" data and set the charts
             ofyDatabase.getOtherDataAndSetCharts(this);
 
         } catch (Exception e) {
@@ -159,6 +159,7 @@ public class TrackDietTab extends Fragment {
         }
     }
 
+    // Method to set the bar chart with daily water intake data (used by ofyDatabase method)
     public void setBarChartWithWaterIntakeData(HashMap<String, Integer> waterIntakeDataMap) {
 
         // Hide the description of the bar chart, we don't need it
@@ -170,7 +171,7 @@ public class TrackDietTab extends Fragment {
         // Entries for Bar Chart
         ArrayList<BarEntry> barEntries = new ArrayList<>();
 
-        // Integer for X values of the chart
+        // Integer for X-axis values of the chart
         int i = 1;
 
         // Iterate over and convert intake data to bar chart entries
@@ -179,7 +180,7 @@ public class TrackDietTab extends Fragment {
             // Fill bar chart entries { X : [ 1,2,3,...], Y : [10,1,5,8,7,..] }
             barEntries.add(new BarEntry(i++, waterIntakeEntries.getValue()));
 
-            // Add date labels
+            // Add date labels, which is stored as key for each value 
             days.add(waterIntakeEntries.getKey());
         }
 
@@ -203,7 +204,7 @@ public class TrackDietTab extends Fragment {
         // Hide the grid lines as they are not required
         barXAxis.setDrawGridLines(false);
 
-        // Set the X-axis to show relevant labels
+        // Now set its labels via value formatter to show relevant data
         barXAxis.setValueFormatter((value, axis) ->
         {
             // Simple try-catch block
@@ -236,7 +237,7 @@ public class TrackDietTab extends Fragment {
 
     }
 
-    // Method to set the weight tracker line chart (called by ofyDatabase method)
+    // Method to set the weight tracker line chart (used by ofyDatabase method)
     public void setCurvedLineChartWithDailyWeightData(HashMap<String, Integer> weightDataMap, Context context) {
 
         // Hide the description of the chart, we don't need it
@@ -257,7 +258,7 @@ public class TrackDietTab extends Fragment {
             // Fill chart entries { X : [ 1,2,3,...], Y : [10,1,5,8,7,...] }
             curvedLineEntries.add(new Entry(i++, dailyWeightEntries.getValue()));
 
-            // Add date/day labels
+            // Add date/day labels, which is stored as key for each value 
             days.add(dailyWeightEntries.getKey());
         }
 
@@ -299,7 +300,7 @@ public class TrackDietTab extends Fragment {
         // Set granularity to 1 so that on zoom the X-axis values do not get repeated
         lineXAxis.setGranularity(1f);
 
-        // Now set its labels via value formatter
+        // Now set its labels via value formatter to show relevant data
         lineXAxis.setValueFormatter((value, axis) ->
         {
             // Simple try-catch block
@@ -331,7 +332,7 @@ public class TrackDietTab extends Fragment {
 
     }
 
-    // Method to set the line chart with diet intake data 
+    // Method to set the line chart with diet intake data (used by ofyDatabase method)
     public void setLineChartWithDietIntakeData(LinkedHashMap<String, Float> nutrientMap, Context context) {
 
         // Hide the description of the line chart, we don't need it
@@ -349,10 +350,10 @@ public class TrackDietTab extends Fragment {
         // Iterate over and convert daily weight data to chart entries
         for (Map.Entry<String, Float> nutrientEntries : nutrientMap.entrySet()) {
 
-            // Fill chart entries { X : [ 1,2,3,...], Y : [10,1,5,8,7,...] }
+            // Fill chart entries { X : [1,2,3,...], Y : [10,1,5,8,7,...] }
             lineChartEntries.add(new Entry(i++, nutrientEntries.getValue()));
 
-            // Add date/day labels
+            // Add date/day labels, which is stored as key for each value 
             days.add(nutrientEntries.getKey());
         }
 
@@ -395,7 +396,7 @@ public class TrackDietTab extends Fragment {
         // Set granularity to 1 so that on zoom the X values do not get repeated
         lineXAxis.setGranularity(1f);
 
-        // Now set its labels via value formatter, note here's no "-1", as minimum is 0.5 and not 0
+        // Now set its labels via value formatter to show relevant data
         lineXAxis.setValueFormatter((value, axis) ->
         {
             // Simple try-catch block
@@ -473,5 +474,6 @@ public class TrackDietTab extends Fragment {
         }
     }
 
+    // Enums for nutrient line chart Modes
     public enum lineChartMode {ENERGY, PROTEINS, FATS, CARBOHYDRATES}
 }

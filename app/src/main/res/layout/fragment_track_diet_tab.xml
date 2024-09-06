@@ -351,9 +351,9 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Text View for experimental features label -->
+        <!-- Text View for nutrient chart label -->
         <TextView
-            android:id="@+id/track_chart_label"
+            android:id="@+id/track_nutrient_line_chart_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
@@ -371,7 +371,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/track_chart_label"
+            app:layout_constraintTop_toBottomOf="@+id/track_nutrient_line_chart_label"
             android:orientation="vertical" >
 
             <!-- Card View for nutrient intake graph -->
