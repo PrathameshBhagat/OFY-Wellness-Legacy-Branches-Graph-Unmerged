@@ -34,28 +34,38 @@ public class RegisterActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+
+        // Assign the progress bar to indicate current tab position
         ProgressBar progressBar = findViewById(R.id.register_progressBar);
 
+        // Set the context
         c= RegisterActivity.this;
+
+        // Assign register view pager
         registerViewPager2 = findViewById(R.id.register_view_pager);
 
         // Set adapter to tab viewer
         registerViewPager2.setAdapter(new RegisterTabAdapter(this));
 
+        // Disable tab change from user input (tab is changed programmatically hence no need)
         registerViewPager2.setUserInputEnabled(false);
 
+        // Add a page change call back to the view pager
         registerViewPager2.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
-                progressBar.setProgress((int) (((position) / (float)5) * 100));
+                // Set the position of progressbar according to the tab position
+                progressBar.setProgress((int) ((position / (float)5) * 100));
             }
         });
 
     }
 
+    // Method to increment the tab position
     static void incrementTab() {
 
+        // Set the view pager's current item to update the tab
         registerViewPager2.setCurrentItem(registerViewPager2.getCurrentItem() + 1);
 
     }
@@ -65,6 +75,7 @@ public class RegisterActivity extends AppCompatActivity {
         // Simple try catch block
         try {
 
+            // Get current google account
             GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(c);
 
             // Create new User to add to database
@@ -90,6 +101,7 @@ public class RegisterActivity extends AppCompatActivity {
             }
 
         } catch(Exception e){
+            // If found exception make a toast to show message to user and print stack trace
             Toast.makeText(c, "Unable to register user, please close the app and try again", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }

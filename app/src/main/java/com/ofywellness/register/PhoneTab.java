@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 
 import com.ofywellness.R;
 
+// Tab for getting user's phone number
 public class PhoneTab extends Fragment {
 
     @Override
@@ -38,6 +39,10 @@ public class PhoneTab extends Fragment {
                 // If phone contains a dot (.), make a toast to show message to user and return
                 Toast.makeText(requireActivity(), "Phone should not have a dot (.) ", Toast.LENGTH_SHORT).show();
                 return;
+            } else if (!phone.chars().allMatch(Character::isDigit)) {
+                // If phone's all characters are not digits, make a toast to show message to user and return
+                Toast.makeText(requireActivity(), "Phone should only contain digits", Toast.LENGTH_SHORT).show();
+                return;
             }
 
             // Set the user's phone number
@@ -56,6 +61,6 @@ public class PhoneTab extends Fragment {
     public void onResume() {
         super.onResume();
         // Set label to ask user to enter phone number
-        ((RegisterActivity) requireActivity()).setLabel("Please enter your Contact No.");
+        ((RegisterActivity) requireActivity()).setLabel("Please enter your contact (phone) No.");
     }
 }
